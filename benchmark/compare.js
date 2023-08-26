@@ -32,23 +32,19 @@ function renderDurationTable(currentAnalysis, baseAnalysis) {
         res += `| ${key.replace(process.cwd(), '')} | ${extractTimeCurrent} | ${renderStatusIndicator(percentageChange)}${percentageChange}% |\n`
     })
 
-    res += '\n'
-    res += '| Stat | Time | Change |\n'
-    res += '| ---- | ---- | ------ |\n'
-
     const extractTotalCurrent = currentAnalysis.duration.extractTotal;
     const extractTotalBase = baseAnalysis.duration.extractTotal;
 
     const percentageChange = calculatePercentageChange(extractTotalCurrent, extractTotalBase)
 
-    res += `| Extract Total | ${extractTotalCurrent} | ${renderStatusIndicator(percentageChange)}${percentageChange}% |\n`
+    res += `| <b>Extract Total</b> | ${extractTotalCurrent} | ${renderStatusIndicator(percentageChange)}${percentageChange}% |\n`
 
     const classifyCurrent = currentAnalysis.duration.classify;
     const classifyBase = baseAnalysis.duration.classify;
 
     const percentageChangeClassify = calculatePercentageChange(classifyCurrent, classifyBase)
 
-    res += `| Classify | ${classifyCurrent} | ${renderStatusIndicator(percentageChangeClassify)}${percentageChangeClassify}% |\n`
+    res += `| <b>Classify</b> | ${classifyCurrent} | ${renderStatusIndicator(percentageChangeClassify)}${percentageChangeClassify}% |\n`
 
     return res
 }
