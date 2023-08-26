@@ -8,6 +8,11 @@
     "analyze": "panda analyze --json report.json",
     "compare": "node compare.js"
   },
+  "pandaAnalysis": {
+    "budget": 10,
+    "budgetPercentIncreaseRed": 20,
+    "minimumChangeThreshold": 0.1
+  },
   "devDependencies": {
     "@pandacss/dev": "workspace:*",
     "@types/react": "^18.2.18",

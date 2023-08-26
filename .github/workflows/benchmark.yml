@@ -76,7 +76,7 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.number }}
-          body-includes: '<!-- __PANDA_CSS_BENCHMARK__ -->'
+          body-includes: '<!-- __PANDA_CSS_ANALISYS__ -->'
     
       - name: Create Comment
         uses: peter-evans/create-or-update-comment@v2
