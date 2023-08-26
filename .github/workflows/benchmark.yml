@@ -1,0 +1,91 @@
+name: Benchmark
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./
+
+permissions:
+  contents: read # for checkout repository
+  actions: read # for fetching base branch bundle stats
+  pull-requests: write # for comments
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest # Use the latest GitHub-hosted runner environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Change to your desired Node.js version
+      
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: true
+
+      - name: Analyze
+        run: pnpm --filter benchmark run 
+
+      - name: Upload analisys
+        uses: actions/upload-artifact@v3
+        with:
+          name: bundle
+          path: benchmark/report.json
+      
+      - name: Download base branch analisys
+        uses: dawidd6/action-download-artifact@v2
+        if: success() && github.event.number
+        with:
+          workflow: benchmark.yml
+          branch: ${{ github.event.pull_request.base.ref }}
+          path: benchmark/base-report
+
+      - name: Compare with base branch analisys
+        if: success() && github.event.number
+        run: ls -laR benchmark/base-report && pnpm --filter benchmark run compare
+
+      - name: Get Comment Body
+        id: get-comment-body
+        if: success() && github.event.number
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        run: |
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$(cat benchmark/report_comment.txt)" >> $GITHUB_OUTPUT
+          echo EOF >> $GITHUB_OUTPUT
+      
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        if: success() && github.event.number
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: '<!-- __PANDA_CSS_BENCHMARK__ -->'
+    
+      - name: Create Comment
+        uses: peter-evans/create-or-update-comment@v2
+        if: success() && github.event.number && steps.fc.outputs.comment-id == 0
+        with:
+          issue-number: ${{ github.event.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+
+      - name: Update Comment
+        uses: peter-evans/create-or-update-comment@v2
+        if: success() && github.event.number && steps.fc.outputs.comment-id != 0
+        with:
+          issue-number: ${{ github.event.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
