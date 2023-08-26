@@ -19,7 +19,7 @@ function renderMarkdownTable(data) {
     Object.keys(data).forEach((key) => {
         const extractTime = data[key]
 
-        res += `| ${key} | ${extractTime} | ${renderStatusIndicator(0)}${0}% |\n`
+        res += `| ${key.replace(process.cwd(), '')} | ${extractTime} | ${renderStatusIndicator(0)}${0}% |\n`
     })
 
     return res
@@ -52,7 +52,6 @@ const options = getOptions()
 
 const BUDGET_PERCENT_INCREASE_RED = options.budgetPercentIncreaseRed
 
-console.log('CWD: ', process.cwd())
 const currentBundle = require(path.join(
     process.cwd(),
     'report.json'
