@@ -11,6 +11,42 @@ const getOptions = (pathPrefix = process.cwd()) => {
     return { ...pkg.nextBundleAnalysis, name: pkg.name }
 }
 
+function renderMarkdownTable(data) {
+    let res = ''
+    res += '| File | Extract Time | Change |\n'
+    res += '| ---- | ---- | ------ |\n'
+
+    Object.keys(data).forEach((key) => {
+        const extractTime = data[key]
+
+        res += `| ${key} | ${extractTime} | ${renderStatusIndicator(0)}${0}% |\n`
+    })
+
+    return res
+}
+
+// given a percentage that a metric has changed, renders a colored status indicator
+// this makes it easier to call attention to things that need attention
+//
+// in general:
+// - yellow means "keep an eye on this"
+// - red means "this is a problem"
+// - green means "this is a win"
+function renderStatusIndicator(percentageChange) {
+    let res = ''
+    if (percentageChange > 0 && percentageChange < BUDGET_PERCENT_INCREASE_RED) {
+        res += '🟡 +'
+    } else if (percentageChange >= BUDGET_PERCENT_INCREASE_RED) {
+        res += '🔴 +'
+    } else if (percentageChange < 0.01 && percentageChange > -0.01) {
+        res += ''
+    } else {
+        res += '🟢 '
+    }
+    return res
+}
+
+
 // Pull options from `package.json`
 const options = getOptions()
 
@@ -28,6 +64,7 @@ const baseBundle = require(path.join(
 
 let output = `## 🤖 Panda CSS Benchmark
 
+${renderMarkdownTable(currentBundle.duration.extractTimeByFiles)}
 `
 
 output += `<!-- __PANDA_CSS_BENCHMARK__ -->`
@@ -45,24 +82,3 @@ fs.writeFileSync(
     ),
     output.trim()
   )
-
-// given a percentage that a metric has changed, renders a colored status indicator
-// this makes it easier to call attention to things that need attention
-//
-// in general:
-// - yellow means "keep an eye on this"
-// - red means "this is a problem"
-// - green means "this is a win"
-function renderStatusIndicator(percentageChange) {
-  let res = ''
-  if (percentageChange > 0 && percentageChange < BUDGET_PERCENT_INCREASE_RED) {
-    res += '🟡 +'
-  } else if (percentageChange >= BUDGET_PERCENT_INCREASE_RED) {
-    res += '🔴 +'
-  } else if (percentageChange < 0.01 && percentageChange > -0.01) {
-    res += ''
-  } else {
-    res += '🟢 '
-  }
-  return res
-}
