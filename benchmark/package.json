@@ -1,0 +1,17 @@
+{
+  "name": "benchmark",
+  "version": "1.0.0",
+  "description": "Benchmarks",
+  "private": true,
+  "scripts": {
+    "prepare": "panda codegen",
+    "analyze": "panda analyze --json report.json",
+    "compare": "node compare.js"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "workspace:*",
+    "@types/react": "^18.2.18",
+    "postcss": "^8.4.27",
+    "prettier": "^2.8.8"
+  }
+}
