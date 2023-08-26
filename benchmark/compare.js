@@ -60,7 +60,9 @@ const currentBundle = require(path.join(
 
 const baseBundle = require(path.join(
     process.cwd(),
-    'base-report/report.json'
+    'base-report',
+    'bundle',
+    'report.json'
 ))
 
 let output = `## 🤖 Panda CSS Benchmark
