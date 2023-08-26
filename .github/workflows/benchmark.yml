@@ -24,17 +24,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18 # Change to your desired Node.js version
-      
-      - name: Install dependencies
+      - name: Setup pnpm
         uses: pnpm/action-setup@v2
         id: pnpm-install
         with:
           version: 8
-          run_install: true
+          run_install: false
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Analyze
         run: pnpm --filter benchmark run analyze
@@ -72,7 +76,7 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.number }}
-          body-includes: '<!-- __PANDA_CSS_BENCHMARK__ -->'
+          body-includes: '<!-- __PANDA_CSS_ANALISYS__ -->'
     
       - name: Create Comment
         uses: peter-evans/create-or-update-comment@v2
