@@ -52,13 +52,16 @@ const options = getOptions()
 
 const BUDGET_PERCENT_INCREASE_RED = options.budgetPercentIncreaseRed
 
+console.log(process.cwd())
 const currentBundle = require(path.join(
     process.cwd(),
+    'benchmark',
     'report.json'
 ))
 
 const baseBundle = require(path.join(
     process.cwd(),
+    'benchmark',
     'base-report/report.json'
 ))
 
